@@ -18,7 +18,7 @@ cookbook = %w(vhost::nginx)
 attribute 'nginx/default_site_enabled',
           :display_name => 'Enable default website',
           :description => 'In case you change this value to true, it will create a sites-enabled/000-default file',
-          :type => 'bolean',
+          :type => 'boolean',
           :default => false,
           :recipes => cookbook
 
