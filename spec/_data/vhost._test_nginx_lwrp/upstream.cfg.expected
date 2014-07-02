@@ -1,0 +1,24 @@
+
+upstream default {
+    some_custom option;
+    custom;
+    server 127.0.0.1:9000;
+    server 127.0.0.1:9000 max_conns=10 backup;
+}
+
+upstream fpm_upstream {
+    server unix://tmp/php-fpm.sock backup;
+    server unix://tmp/php-fpm.sock more_param;
+    server unix://tmp/php-fpm.sock;
+}
+
+server {
+    listen 80 default_server backlog=10;
+
+    server_name test.dev en.test.dev www.test.dev;
+
+    root /var/www/test.dev;
+
+    access_log <%= node[:nginx][:log_dir] %>/access.test.dev.log;
+    error_log <%= node[:nginx][:log_dir] %>/error.test.dev.log;
+}

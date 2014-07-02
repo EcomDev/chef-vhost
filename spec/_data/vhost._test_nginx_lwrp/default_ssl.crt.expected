@@ -1,0 +1,2 @@
+# Managed by Chef. Local changes will be overwritten.
+<%=node[:_vhost_test][:ssl][:public]%>

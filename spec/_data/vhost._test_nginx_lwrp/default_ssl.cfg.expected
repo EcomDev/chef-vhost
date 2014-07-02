@@ -1,0 +1,15 @@
+
+server {
+    listen 80 default_server backlog=10;
+    listen 443 default_server ssl;
+
+    ssl_certificate <%=File.join(node['nginx']['dir'], 'ssl', 'test.dev.public.crt')%>;
+    ssl_certificate_key <%=File.join(node['nginx']['dir'], 'ssl', 'test.dev.private.key')%>;
+
+    server_name test.dev en.test.dev www.test.dev;
+
+    root /var/www/test.dev;
+
+    access_log <%= node[:nginx][:log_dir] %>/access.test.dev.log;
+    error_log <%= node[:nginx][:log_dir] %>/error.test.dev.log;
+}

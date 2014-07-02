@@ -1,0 +1,14 @@
+
+server {
+    listen 80 default_server backlog=10;
+
+    server_name test.dev en.test.dev www.test.dev;
+
+    root /var/www/test.dev;
+
+    access_log /var/log/nginx/access.test.dev.log;
+    error_log /var/log/nginx/error.test.dev.log;
+
+    gzip on;
+    some_directive on;
+}

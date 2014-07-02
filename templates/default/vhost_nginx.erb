@@ -1,0 +1,75 @@
+<% @upstreams.each do |name, upstream| %>
+
+upstream <%=name%> {
+<% upstream[:custom].each do |key, value| %>
+    <%=key%><%=(value.is_a?(TrueClass) ? '' : ' ' + value.to_s)%>;
+<% end%>
+<% upstream[:servers].each do |value| %>
+    server <%=value%>;
+<% end%>
+}
+<% end %>
+<% @http_maps.each do |name, http_map| %>
+
+map $<%=http_map[:source]%> $<%=name%> {
+    <% if http_map[:hostnames] %>
+    hostnames;
+
+    <% end %>
+    <% unless http_map[:default].nil? %>
+    default "<%=http_map[:default].gsub('"', %q(\\\"))%>";
+
+    <% end %>
+    <% http_map[:maps].each do |key, value| %>
+    <% if key.match(/["\s]/) %>
+    "<%=key.gsub('"', %q(\\\"))%>" "<%=value.gsub('"', %q(\\\"))%>";
+    <% else %>
+    <%=key%> "<%=value.gsub('"', %q(\\\"))%>";
+    <% end %>
+    <% end%>
+}
+<% end %>
+
+server {
+<% @listens.each do |listen| %>
+    listen <%=listen[:listen]%> <%=listen[:params].join(' ') %>;
+<% end %>
+<% unless @ssl.nil? %>
+
+    ssl_certificate <%=@ssl[:certificate]%>;
+    ssl_certificate_key <%=@ssl[:certificate_key]%>;
+<% end%>
+<% unless @server_names.empty? %>
+
+    server_name <%=@server_names.join(' ')%>;
+<% end%>
+<% unless @document_root.nil? %>
+
+    root <%=@document_root%>;
+<% end%>
+
+<% unless @custom_access_log.nil? %>
+    access_log <%= @custom_access_log %>;
+<% else %>
+    access_log <%= node[:nginx][:log_dir] %>/access.<%=@name%>.log<% if node['nginx']['access_log_options'] %> <%= node['nginx']['access_log_options'] %><% end %>;
+<% end %>
+<% unless @custom_error_log.nil? %>
+    error_log <%= @custom_error_log %>;
+<% else %>
+    error_log <%= node[:nginx][:log_dir] %>/error.<%=@name%>.log<% if node['nginx']['error_log_options'] %> <%= node['nginx']['error_log_options'] %><% end %>;
+<% end %>
+<% @locations.each do |path, directives| %>
+
+    location <%=path%> {
+        <% directives.each do |directive| %>
+        <%=directive%>
+        <% end %>
+    }
+<% end %>
+<% unless @custom_directives.empty? %>
+
+    <% @custom_directives.each do |directive| %>
+    <%=directive%>
+    <% end %>
+<% end %>
+}
