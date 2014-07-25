@@ -3,37 +3,36 @@ require 'spec_helper'
 describe 'vhost::_test_nginx_lwrp' do
   include SpecHelper
 
-  let(:chef_run) do
-    ChefSpec::Runner.new(step_into: 'vhost_nginx') do |node|
-      stub_include(['vhost::nginx', 'nginx::default'])
-      node.set[:_vhost_test][:name] = 'test.dev'
-      node.set[:_vhost_test][:action] = :enable
-    end
+  before(:each) do
+    allow_recipe('nginx::default','vhost::nginx')
   end
 
-  let (:test_params) { chef_run.node.set[:_php_fpm_test] }
-
-  let (:node) { chef_run.node }
+  let(:chef_run) do
+    chef_run_proxy.instance(step_into: 'vhost_nginx') do |node|
+      node.set[:_vhost_test][:name] = 'test.dev'
+      node.set[:_vhost_test][:action] = :enable
+    end.converge(described_recipe)
+  end
 
   it 'includes vhost::nginx recipe' do
-    expect(converged).to include_recipe('vhost::nginx')
+    expect(chef_run).to include_recipe('vhost::nginx')
   end
 
   it 'calls enable nginx vhost resource' do
-    expect(converged).to enable_vhost_nginx('test.dev')
+    expect(chef_run).to enable_vhost_nginx('test.dev')
   end
 
   it 'does not enable if already enabled' do
-    converge do |node|
+    chef_run_proxy.block(:converge, false) do |chef_run|
       allow(File).to receive(:symlink?)
-                     .with(File.join(node['nginx']['dir'], 'sites-enabled', 'test.dev.tld'))
+                     .with(File.join(chef_run.node['nginx']['dir'], 'sites-enabled', 'test.dev.tld'))
                      .and_return(true)
     end
 
-    expect(converged).not_to run_execute('nxensite test.dev.tld')
+    expect(chef_run).not_to run_execute('nxensite test.dev.tld')
   end
 
   it 'enables a virtual host if it is not enabled' do
-    expect(converged).to run_execute('nxensite test.dev.tld')
+    expect(chef_run).to run_execute('nxensite test.dev.tld')
   end
 end

@@ -13,21 +13,30 @@ provisioner:
 
 platforms:
   - name: ubuntu-12.04
+    driver:
+      network:
+      - ["private_network", {ip: "33.33.34.11"}]
   - name: debian-7.4
+    driver:
+      network:
+        - ["private_network", {ip: "33.33.34.12"}]
   - name: centos-6.5
+    driver:
+      network:
+        - ["private_network", {ip: "33.33.35.13"}]
+
 
 suites:
   - name: default
     run_list:
-      - recipe[php_fpm::_test_pool_create]
-      - recipe[vhost::_test_nginx_lwrp]
+      - recipe[vhost_test::nginx_php_fpm_create]
     attributes:
       php:
         major_version: '5.5'
         recompile: true
-      _php_fpm_test:
+      php_fpm_test:
         pool: test
-      _vhost_test:
+      vhost_test:
         action:
           - create
           - enable

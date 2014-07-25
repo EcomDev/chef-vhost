@@ -4,10 +4,10 @@ maintainer_email 'ivan.chepurnyi@ecomdev.org'
 license          'GPLv3'
 description      'Installs/Configures vhost'
 long_description 'Installs/Configures vhost'
-version          '0.1.0'
+version          '0.1.1'
 
 depends 'nginx'
-depends 'php_fpm'
+depends 'ecomdev_common'
 
 %w(ubuntu debian centos).each do |os|
   supports os

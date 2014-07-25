@@ -4,20 +4,18 @@ describe 'vhost::nginx' do
   include SpecHelper
 
   let (:chef_run) do
-    ChefSpec::Runner.new do
-      stub_include
-    end
+    chef_run_proxy.instance.converge(described_recipe)
   end
 
   it 'includes nginx recipe' do
-    expect(converged).to include_recipe('nginx::default')
+    expect(chef_run).to include_recipe('nginx::default')
   end
 
   it 'overrides default vhost configuration option' do
-    expect(converged.node['nginx']['default_site_enabled']).to eq(false)
+    expect(chef_run.node['nginx']['default_site_enabled']).to eq(false)
   end
 
   it 'deletes nginx default vhost from conf.d directory' do
-    expect(converged).to delete_file(File.join(converged.node['nginx']['dir'], 'conf.d', 'default.conf'))
+    expect(chef_run).to delete_file(File.join(chef_run.node['nginx']['dir'], 'conf.d', 'default.conf'))
   end
 end
