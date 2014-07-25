@@ -133,8 +133,22 @@ end
 
 def render_upstream_server(server)
   server_str = nil
-  if server.is_a?(Hash) && server.key?(:fpm) && respond_to?('fpm_fastcgi_listen')
-    server_str = fpm_fastcgi_listen(server[:fpm])
+  if server.is_a?(Hash) && server.keys.any? {|v| [:fpm, :ip, :port].include?(v.to_sym) }
+    if server.key?(:fpm) && node.shared_data?(:resource, :fpm, server[:fpm])
+      server_opts = node.shared_data(:resource, :fpm, server[:fpm])
+    else
+      server_opts = {
+        ip: server.key?(:ip) ? server[:ip] : 'localhost',
+        port: server.key?(:port) ? server[:port] : '9000',
+      }
+    end
+
+    if server_opts.key?(:socket_path)
+      server_str = 'unix:/' + server_opts[:socket_path]
+    else
+      server_str = server_opts[:ip] + ':' + server_opts[:port]
+    end
+
     if server.key?(:params)
       if server[:params].is_a?(Array)
         server_str += ' ' + server[:params].join(' ')

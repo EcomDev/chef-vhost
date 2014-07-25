@@ -1,17 +1,23 @@
 include_attribute 'nginx'
 
-set['nginx']['default_site_enabled'] = false
-default['nginx']['sites']['available_dir'] = ::File.join(node['nginx']['dir'], 'sites-available')
-default['nginx']['sites']['installed_dir'] = ::File.join(node['nginx']['dir'], 'sites-enabled')
+namespace 'nginx', precedence: set do
+  default_site_enabled false
+end
 
-default['vhost']['nginx']['default']['server_names'] = []
-default['vhost']['nginx']['default']['listens'] = []
-default['vhost']['nginx']['default']['upstreams'] = {}
-default['vhost']['nginx']['default']['locations'] = {}
-default['vhost']['nginx']['default']['custom_directives'] = []
-default['vhost']['nginx']['default']['http_maps'] = {}
-default['vhost']['nginx']['default']['ssl'] = nil
+namespace 'nginx', 'sites' do
+  available_dir ::File.join(node['nginx']['dir'], 'sites-available')
+  installed_dir ::File.join(node['nginx']['dir'], 'sites-enabled')
+end
 
-default['vhost']['nginx']['default']['document_root'] = nil
-default['vhost']['nginx']['default']['custom_error_log'] = nil
-default['vhost']['nginx']['default']['custom_access_log'] = nil
+namespace 'vhost', 'nginx', 'default' do
+  server_names Array.new
+  listens Array.new
+  upstreams Hash.new
+  locations Hash.new
+  custom_directives Array.new
+  http_maps Hash.new
+  ssl nil
+  document_root nil
+  custom_error_log nil
+  custom_access_log nil
+end

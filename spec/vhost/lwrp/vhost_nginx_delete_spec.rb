@@ -3,38 +3,39 @@ require 'spec_helper'
 describe 'vhost::_test_nginx_lwrp' do
   include SpecHelper
 
-  let(:chef_run) do
-    ChefSpec::Runner.new(step_into: 'vhost_nginx') do |node|
-      stub_include(['vhost::nginx', 'nginx::default'])
-      node.set[:_vhost_test][:name] = 'test.dev'
-      node.set[:_vhost_test][:action] = :delete
-    end
+  before(:each) do
+    allow_recipe('nginx::default','vhost::nginx')
   end
 
-  let (:test_params) { chef_run.node.set[:_vhost_test] }
+  let(:chef_run) do
+    chef_run_proxy.instance(step_into: 'vhost_nginx') do |node|
+      node.set[:_vhost_test][:name] = 'test.dev'
+      node.set[:_vhost_test][:action] = :delete
+    end.converge(described_recipe)
+  end
 
   let (:node) { chef_run.node }
 
   it 'includes vhost::nginx recipe' do
-    expect(converged).to include_recipe('vhost::nginx')
+    expect(chef_run).to include_recipe('vhost::nginx')
   end
 
   it 'calls delete nginx vhost resource' do
-    expect(converged).to delete_vhost_nginx('test.dev')
+    expect(chef_run).to delete_vhost_nginx('test.dev')
   end
 
   it 'deletes a configuration file' do
-    expect(converged).to delete_file(File.join(node['nginx']['dir'], 'sites-available', 'test.dev.tld'))
-    expect(converged).not_to run_execute('nxdissite test.dev.tld')
+    expect(chef_run).to delete_file(File.join(node['nginx']['dir'], 'sites-available', 'test.dev.tld'))
+    expect(chef_run).not_to run_execute('nxdissite test.dev.tld')
   end
 
   it 'disables a virtual host if it is enabled' do
-    converge do |node|
+    chef_run_proxy.block(:converge, false) do |chef_run|
       allow(File).to receive(:symlink?)
-                     .with(File.join(node['nginx']['dir'], 'sites-enabled', 'test.dev.tld'))
+                     .with(File.join(chef_run.node['nginx']['dir'], 'sites-enabled', 'test.dev.tld'))
                      .and_return(true)
     end
 
-    expect(converged).to run_execute('nxdissite test.dev.tld')
+    expect(chef_run).to run_execute('nxdissite test.dev.tld')
   end
 end
