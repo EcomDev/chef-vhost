@@ -4,7 +4,7 @@ maintainer_email 'ivan.chepurnyi@ecomdev.org'
 license          'GPLv3'
 description      'Installs/Configures vhost'
 long_description 'Installs/Configures vhost'
-version          '0.1.1'
+version          '0.1.2'
 
 depends 'nginx'
 depends 'ecomdev_common'

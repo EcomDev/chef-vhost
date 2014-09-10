@@ -22,7 +22,7 @@ source "https://supermarket.getchef.com"
 
 metadata
 
-cookbook "ecomdev_common", github: 'IvanChepurnyi/chef-ecomdev_common', tag: '0.1.0'
+cookbook "ecomdev_common", github: 'EcomDev/chef-ecomdev_common', tag: '0.1.0'
 cookbook "nginx"
 cookbook "vhost_test", path: 'test/fixtures/vhost_test'
-cookbook "php_fpm", github: 'IvanChepurnyi/chef-php_fpm', tag: '0.1.8', group: 'development'
+cookbook "php_fpm", github: 'EcomDev/chef-php_fpm', tag: '0.1.9', group: 'development'

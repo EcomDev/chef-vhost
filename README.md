@@ -14,6 +14,14 @@ Wrapper for Vhost creation in different systems
 * CentOS 6.3, 6.4, 6.5
 * Debian 7.4
 
+
+## Build Status
+
+[![Develop Branch](https://api.travis-ci.org/EcomDev/chef-vhost.svg?branch=develop)](https://travis-ci.org/EcomDev/chef-vhost) **Next Release Branch**
+
+[![Master Branch](https://api.travis-ci.org/EcomDev/chef-vhost.svg)](https://travis-ci.org/EcomDev/chef-vhost) **Current Stable Release**
+
+
 # LWRPs
 
 * `vhost_nginx`
