@@ -58,6 +58,12 @@ server {
 <% else %>
     error_log <%= node[:nginx][:log_dir] %>/error.<%=@name%>.log<% if node['nginx']['error_log_options'] %> <%= node['nginx']['error_log_options'] %><% end %>;
 <% end %>
+<% unless @custom_directives.empty? %>
+
+<% @custom_directives.each do |directive| %>
+    <%=directive%>
+<% end %>
+<% end %>
 <% @locations.each do |path, directives| %>
 
     location <%=path%> {
@@ -65,11 +71,5 @@ server {
         <%=directive%>
         <% end %>
     }
-<% end %>
-<% unless @custom_directives.empty? %>
-
-    <% @custom_directives.each do |directive| %>
-    <%=directive%>
-    <% end %>
 <% end %>
 }
